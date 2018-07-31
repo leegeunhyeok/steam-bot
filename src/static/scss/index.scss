@@ -1,0 +1,104 @@
+@import 'default';
+
+.header {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $background-color-dark;
+  height: $header-height;
+  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.75);
+}
+
+@mixin message{
+  display: inline-block;
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
+.chat-wrap {
+  box-sizing: border-box;
+  background-color: $background-color-light;
+  color: $background-text-color;
+  padding: 10px 10px;
+  padding-top: $header-height + 10px;
+  height: 100%;
+  overflow-y: auto;
+
+  & .message {
+    height: 32px;
+    margin-bottom: 10px;
+    color: #000;
+    text-shadow: 1px 1px 2px #fff;
+
+    & .bot-message {
+      @include message;
+      float: left;
+      background-color: $secondary-color;
+    }
+
+    & .user-message {
+      @include message;
+      float: right;
+      background-color: $primary-color;
+    }
+  }
+}
+
+.chat-type-wrap {
+  position: absolute;
+  box-sizing: border-box;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 40px;
+  padding: 0 4px;
+  background-color: $background-color-dark;
+
+  & #input {
+    margin-top: 5px;
+    box-sizing: border-box;
+    outline: none;
+    border-radius: 4px;
+    border: 2px solid #2a2d339f;
+    background-color: rgb(97, 97, 97);
+    color: #fff;
+    padding: 5px 2px;
+    width: calc(100% - 65px);
+  }
+
+  & #send-button {
+    cursor: pointer;
+    margin-top: 5px;
+    width: 50px;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    margin-right: 5px;
+    padding: 5px;
+    background-color: $primary-color;
+    color: #fff;
+    float: right;
+    transition: .2s;
+  }
+
+  & #send-button:hover {
+    background-color: rgba(62, 126, 167, 0.4);
+  }
+}
+
+::placeholder { /* 크롬, 파이어폭스, 오페라, 사파리 10.1+ */
+  color: $background-text-color;
+  opacity: 1; /* 파이어폭스 */
+}
+
+:-ms-input-placeholder { /* IE 10-11 */
+  color: $background-text-color;
+}
+
+::-ms-input-placeholder { /* 엣지 */
+  color: $background-text-color;
+}
