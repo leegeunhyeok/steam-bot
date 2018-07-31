@@ -4,6 +4,7 @@
   "description": "Steam product chat bot",
   "main": "index.js",
   "scripts": {
+    "start": "node ./steam-bot-server/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,8 +22,12 @@
   },
   "homepage": "https://github.com/leegeunhyeok/steam-bot#readme",
   "dependencies": {
-    "@google-cloud/storage": "^1.7.0",
     "dialogflow": "^0.6.0",
+    "keygrip": "^1.0.2",
+    "koa": "^2.5.2",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "randomstring": "^1.1.5",
     "steam-app-search": "^1.0.2"
   }
 }

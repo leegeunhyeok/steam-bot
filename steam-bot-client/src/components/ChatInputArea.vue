@@ -1,52 +1,33 @@
-@import 'default';
+<template>
+  <div class="chat-type-wrap">
+    <input id="input" placeholder="메시지 입력.." @keydown.enter="send" v-model="message">
+    <button id="send-button" @click="send">전송</button>
+  </div>
+</template>
 
-.header {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: $background-color-dark;
-  height: $header-height;
-  box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.75);
-}
-
-@mixin message{
-  display: inline-block;
-  border-radius: 10px;
-  padding: 5px 10px;
-}
-
-.chat-wrap {
-  box-sizing: border-box;
-  background-color: $background-color-light;
-  color: $background-text-color;
-  padding: 10px 10px;
-  padding-top: $header-height + 10px;
-  height: 100%;
-  overflow-y: auto;
-
-  & .message {
-    height: 32px;
-    margin-bottom: 10px;
-    color: #000;
-    text-shadow: 1px 1px 2px #fff;
-
-    & .bot-message {
-      @include message;
-      float: left;
-      background-color: $secondary-color;
+<script>
+export default {
+  name: 'ChatInputArea',
+  data () {
+    return {
+      message: ''
     }
-
-    & .user-message {
-      @include message;
-      float: right;
-      background-color: $primary-color;
+  },
+  methods: {
+    send () {
+      const message = this.message.trim()
+      this.message = ''
+      if (message) {
+        this.$emit('user-message', message)
+      }
+      document.getElementById('input').focus()
     }
   }
 }
+</script>
+
+<style lang="scss">
+@import '../common.scss';
 
 .chat-type-wrap {
   position: absolute;
@@ -102,3 +83,4 @@
 ::-ms-input-placeholder { /* 엣지 */
   color: $background-text-color;
 }
+</style>
