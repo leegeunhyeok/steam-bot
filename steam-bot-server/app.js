@@ -8,6 +8,9 @@ const path = require('path')
 const KeyGrip = require('keygrip')
 const random = require('randomstring')
 
+const SteamSearch = require('steam-app-search').SteamStore
+const SteamStore = new SteamSearch()
+
 const Bot = require('./bot.js').DialogFlow
 const bot = new Bot('steam-bot-673ee', 'C:/g_key/a.json')
 
@@ -25,14 +28,28 @@ const router = new KoaRouter()
 /* 암호화 키 생성 */
 app.keys = new KeyGrip([random.generate()], 'sha256', 'hex')
 
+/* 클라이언트 메시지 Dialogflow로 전달 */
 router.post('/query', async ctx => {
+  let resType = 'default'
+  let resData = {}
   console.log('Client:', ctx.request.body.message)
   const res = await bot.sendTextMessageToDialogFlow(ctx.request.body.message, 'aas')
   const resMessage = bot.getResponseText(res)
+
+  /* 검색 인텐트인 경우 해당 키워드 검색하여 데이터 조회하기 */
+  if (bot.getIntent(res) === 'search-keyword') {
+    const keyword = bot.getParameterValue(res)['keyword']['stringValue']
+    const result = await SteamStore.search(keyword)
+    resType = 'store'
+    const pendingPromises = result.slice(0, 3).map(async info => {
+      info['detail'] = await SteamStore.detail(info.id, 'koreana')
+      return info
+    })
+    resData = await Promise.all(pendingPromises)
+  }
   console.log('Dialogflow:', resMessage)
-  console.log(bot.getIntent(res))
   ctx.type = 'json'
-  ctx.body = {response: resMessage}
+  ctx.body = {type: resType, message: resMessage, data: resData}
 })
 
 /* 미들웨어 설정 */

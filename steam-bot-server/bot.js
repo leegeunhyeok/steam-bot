@@ -1,6 +1,3 @@
-const SteamSearch = require('steam-app-search').SteamStore
-const SteamStore = new SteamSearch()
-
 const dialogflow = require('dialogflow')
 const fs = require('fs')
 
@@ -62,6 +59,15 @@ class DialogFlow {
 	 */
 	getIntent (result) {
 		return result[0].queryResult.intent.displayName
+	}
+
+  /**
+	 * @description 결과 객체에서 파라미터 값을 추출하여 반환
+	 * @param {any} result Dialogflow 결과 객체
+	 * @return {any} 파라미터 정보
+	 */
+	getParameterValue (result) {
+		return result[0].queryResult.parameters.fields
 	}
 }
 

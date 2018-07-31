@@ -33,15 +33,19 @@ export default {
   },
   methods: {
     userMessage (message) {
-      this.message = {type: 'user', message: message}
+      this.message = {type: 'user', message: message, data: {}}
       this.$http.post('/query', {message: message}).then(r => {
-        this.botMessage(r.data.response)
+        this.botMessage(r.data)
       }).catch(e => {
         this.openAlert('메시지 전송 중 문제가 발생했습니다.')
       })
     },
-    botMessage (message) {
-      this.message = {type: 'bot', message: message}
+    botMessage (response) {
+      this.message = {
+        type: response.type,
+        message: response.message,
+        data: response.data
+      }
     },
     openAlert (message) {
       try {
