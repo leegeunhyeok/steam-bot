@@ -22,7 +22,6 @@ export default {
 
       const messageWrap = document.createElement('div')
       messageWrap.classList.add('message')
-      messageWrap.classList.add('hidden')
 
       const messageArea = document.createElement('div')
       messageArea.classList.add(this.data.type === 'bot' ? 'bot-message' : 'user-message')
@@ -46,6 +45,7 @@ export default {
   display: inline-block;
   border-radius: 10px;
   padding: 5px 10px;
+  word-wrap: break-word;
 }
 
 @keyframes fade {
@@ -69,7 +69,6 @@ export default {
   overflow-y: auto;
 
   & .message {
-    height: 32px;
     margin-bottom: 10px;
     color: #000;
     text-shadow: 1px 1px 1px #fff;
@@ -87,6 +86,12 @@ export default {
       float: right;
       background-color: $primary-color;
     }
+  }
+
+  & .message::after {
+    content: "";
+    clear: both;
+    display: table;
   }
 }
 

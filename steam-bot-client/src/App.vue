@@ -35,7 +35,7 @@ export default {
     userMessage (message) {
       this.message = {type: 'user', message: message}
       this.$http.post('/query', {message: message}).then(r => {
-        this.botMessage('Ok')
+        this.botMessage(r.data.response)
       }).catch(e => {
         this.openAlert('메시지 전송 중 문제가 발생했습니다.')
       })
