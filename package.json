@@ -25,6 +25,7 @@
     "dialogflow": "^0.6.0",
     "keygrip": "^1.0.2",
     "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
     "randomstring": "^1.1.5",
