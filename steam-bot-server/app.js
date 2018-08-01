@@ -32,12 +32,15 @@ app.keys = new KeyGrip([random.generate()], 'sha256', 'hex')
 router.post('/query', async ctx => {
   let resType = 'default'
   let resData = {}
+  let resAction = ''
   console.log('Client:', ctx.request.body.message)
   const res = await bot.sendTextMessageToDialogFlow(ctx.request.body.message, 'aas')
-  const resMessage = bot.getResponseText(res)
+  let resMessage = bot.getResponseText(res)
+
+  const $intent = bot.getIntent(res)
 
   /* 검색 인텐트인 경우 해당 키워드 검색하여 데이터 조회하기 */
-  if (bot.getIntent(res) === 'search-keyword') {
+  if ($intent === 'search-keyword' || $intent === 'search') {
     const keyword = bot.getParameterValue(res)['keyword']['stringValue']
     const result = await SteamStore.search(keyword)
     resType = 'store'
@@ -46,10 +49,14 @@ router.post('/query', async ctx => {
       return info
     })
     resData = await Promise.all(pendingPromises)
+  } else if ($intent === 'cart-clear') {
+    resAction = 'cart-clear'
+  } else if ($intent === 'help') {
+    resAction = 'help'
   }
   console.log('Dialogflow:', resMessage)
   ctx.type = 'json'
-  ctx.body = {type: resType, message: resMessage, data: resData}
+  ctx.body = {type: resType, message: resMessage, data: resData, action: resAction}
 })
 
 /* 미들웨어 설정 */

@@ -1,79 +1,62 @@
 <template>
   <div id="chat-wrap">
-    <!-- Chat content -->
+    <div class="message" v-for="m in messages" :key="m">
+      <ChatMessage :data="m" @notify="notify" @message="createMessage" @scrollDown="scrollDown"></ChatMessage>
+    </div>
   </div>
 </template>
 
 <script>
+import ChatMessage from './ChatMessage.vue'
+
 export default {
-  name: 'ChatTypeArea',
+  name: 'ChatInputArea',
   props: ['data'],
+  data () {
+    return {
+      messages: []
+    }
+  },
+  components: {
+    ChatMessage
+  },
   watch: {
     data (v) {
-      if (v.type === 'default' || v.type === 'user') {
-        this.createMessage()
-      } else if (v.type === 'store') {
-        this.createStoreMessage()
-      }
+      this.messages.push(v)
+    }
+  },
+  mounted () {
+    const start = [
+      '안녕하세요, 스팀 상점 정보를 제공하는 챗봇이에요!',
+      '상점을 검색하여 원하는 제품을 찾아볼 수 있어요~',
+      '도움이 필요하면 언제든지 불러주세요!'
+    ]
+
+    for (let m of start) {
+      this.messages.push({
+        type: 'default',
+        message: m,
+        data: {},
+        action: ''
+      })
     }
   },
   methods: {
     /**
-     * @description 새 메시지 Element를 생성 후 추가합니다.
-     */
-    createMessage () {
-      const wrap = document.getElementById('chat-wrap')
-
-      const html = `
-        <div class="${this.data.type === 'default' ? 'bot-message' : 'user-message'}">
-          ${this.data.message}
-        </div
-      `
-      const messageWrap = document.createElement('div')
-      messageWrap.classList.add('message')
-      messageWrap.innerHTML = html
-
-      wrap.appendChild(messageWrap)
-
-      this.scrollDown()
-    },
-    /**
-     * @description 새 상점 메시지 Element를 생성 후 추가합니다.
-     */
-    createStoreMessage () {
-      const wrap = document.getElementById('chat-wrap')
-
-      let items = ''
-
-      for (let item of this.data.data) {
-        const detail = item.detail[item.id]
-        items += `
-          <div class="itemArea">
-            <img class="itemImage" src="${detail.data.header_image}">
-          </div>
-        `
-      }
-
-      const html = `
-        <div class="store-message">
-          <div class="store-header-message">${this.data.message}</div>
-          ${items}
-        </div>`
-
-      const message = document.createElement('div')
-      message.classList.add('message')
-      message.innerHTML = html
-
-      wrap.appendChild(message)
-
-      this.scrollDown()
-    },
-    /**
-     * @description 가장 아래로 스크롤 내리기
+     * @description 채팅창 스크롤을 맨 아래로 내립니다.
      */
     scrollDown () {
       const chat = document.getElementById('chat-wrap')
       chat.scrollTop = chat.scrollHeight
+    },
+    /**
+     * @description 알림 이벤트를 부모 컴포넌트에게 전달합니다.
+     */
+    notify (message) {
+      this.$emit('notify', message)
+    },
+    createMessage (message) {
+      this.$emit('message', message)
     }
   }
 }
@@ -81,13 +64,6 @@ export default {
 
 <style lang="scss">
 @import '../common.scss';
-
-@mixin message{
-  display: inline-block;
-  border-radius: 10px;
-  padding: 5px 10px;
-  word-wrap: break-word;
-}
 
 @keyframes fade {
   0% {
@@ -115,43 +91,6 @@ export default {
     text-shadow: 1px 1px 1px #fff;
     transition: opacity .3s;
     animation: fade .3s linear;
-
-    .bot-message {
-      @include message;
-      float: left;
-      background-color: $secondary-color;
-    }
-
-    .store-message {
-      @include message;
-      float: left;
-      text-shadow: none;
-      color: #fff;
-
-      .store-header-message {
-        margin-bottom: 10px;
-        font-weight: bold;
-        font-size: 1.2rem;
-      }
-
-      .itemArea {
-        display: inline-block;
-        width: 80%;
-        margin-bottom: 15px;
-
-        .itemImage {
-          width: 100%;
-          border-radius: 5px;
-          box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
-        }
-      }
-    }
-
-    .user-message {
-      @include message;
-      float: right;
-      background-color: $primary-color;
-    }
   }
 
   .message::after {
