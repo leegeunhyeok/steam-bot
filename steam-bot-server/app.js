@@ -2,9 +2,11 @@
 const Koa = require('koa')
 const KoaStatic = require('koa-static')
 const KoaRouter = require('koa-router')
+const KoaSession = require('koa-session')
 const KoaBodyParser = require('koa-bodyparser')
 const http = require('http')
 const path = require('path')
+const fs = require('fs')
 const KeyGrip = require('keygrip')
 const random = require('randomstring')
 
@@ -15,18 +17,34 @@ const Bot = require('./bot.js').DialogFlow
 const bot = new Bot('steam-bot-673ee', 'C:/g_key/a.json')
 
 /* Server port */
-const port = 8000
+const port = 80
 
+/* Koa 인스턴스 생성 */
 const app = new Koa()
+
+/* 암호화 키 생성 */
+app.keys = new KeyGrip([random.generate()], 'sha256', 'hex')
 
 /* POST 데이터를 읽기 위한 미들웨어 */
 app.use(KoaBodyParser())
 
+/* 세션 미들 웨어 */
+app.use(KoaSession(app))
+
 /* 라우터 */
 const router = new KoaRouter()
 
-/* 암호화 키 생성 */
-app.keys = new KeyGrip([random.generate()], 'sha256', 'hex')
+router.get('/', (ctx, next) => {
+  if (ctx.session['id'] === undefined) {
+    const time = new Date().getTime().toString()
+    ctx.session['id'] = KeyGrip([time], 'sha256', 'hex').sign(random.generate())
+    console.log('New session:', ctx.session['id'])
+  }
+
+  ctx.type = 'html'
+  ctx.status = 200
+  ctx.body = fs.readFileSync(path.join(__dirname, '../steam-bot-client/dist/index.html'))
+})
 
 /* 클라이언트 메시지 Dialogflow로 전달 */
 router.post('/query', async ctx => {
@@ -34,7 +52,7 @@ router.post('/query', async ctx => {
   let resData = {}
   let resAction = ''
   console.log('Client:', ctx.request.body.message)
-  const res = await bot.sendTextMessageToDialogFlow(ctx.request.body.message, 'aas')
+  const res = await bot.sendTextMessageToDialogFlow(ctx.request.body.message, ctx.session.id)
   let resMessage = bot.getResponseText(res)
 
   const $intent = bot.getIntent(res)
@@ -59,9 +77,11 @@ router.post('/query', async ctx => {
   ctx.body = {type: resType, message: resMessage, data: resData, action: resAction}
 })
 
-/* 미들웨어 설정 */
-app.use(KoaStatic(path.join(__dirname, '../steam-bot-client/dist')))
+/* 라우터 미들웨어 설정 */
 app.use(router.routes())
+
+/* 정적파일 */
+app.use(KoaStatic(path.join(__dirname, '../steam-bot-client/dist/')))
 
 /* 서버 시작 */
 http.createServer(app.callback()).listen(port, () => {
