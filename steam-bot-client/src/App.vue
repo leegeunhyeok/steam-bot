@@ -44,7 +44,7 @@ export default {
       this.message = {type: 'user', message: message, data: {}}
       this.$http.post('/query', {message: message}).then(r => {
         /**
-         * r = {
+         * r.data = {
          *   action: {string},
          *   type: '{string}'
          *   message: '{string}',
@@ -60,15 +60,16 @@ export default {
     },
     botMessage (response) {
       const $action = response.action
-      this.message = response
       if ($action === 'cart-clear') {
         this.$store.commit('RESET_CART')
         this.openAlert('카트가 초기화되었습니다.')
       } else if ($action === 'cart-list') {
-        console.log(this.$store.state.cart)
+        response.data = this.$store.state.cart
+        response.type = 'store'
       } else if ($action === 'help') {
         this.openModal()
       }
+      this.message = response
     },
     createMessage (message) {
       this.message = {

@@ -10,6 +10,19 @@
         <button class="cart-button" @click="addCart(item)" v-else>카트에 담기</button>
         <a class="store-visit" :href="item.src" target="_blank">상점 페이지 방문</a>
       </div>
+      <div class="itemPrice" v-for="(data, idx) of priceData(item)" :key="idx">
+        <div v-if="data.free" class="free">무료</div>
+        <div v-else-if="data.discount">
+          <div class="discount">
+            <div class="origin-price">{{ priceString(data.init_price) }}</div>
+            <div>{{ priceString(data.final_price) }}</div>
+          </div>
+          <div class="discount-span">
+            <div class="discount-percent">-{{ data.percent }}%</div>
+          </div>
+        </div>
+        <div v-else>{{ priceString(data.init_price) }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -53,9 +66,13 @@ export default {
   },
   methods: {
     inCart (id) {
-      return this.$store.state.cart[id] !== undefined
+      return this.$store.state.itemList.indexOf(id) !== -1
     },
     addCart (item) {
+      if (this.$store.state.cart[item.id] && this.inCart(item.id)) {
+        this.$emit('notify', '이미 카트에 존재합니다')
+        return
+      }
       this.$store.commit('ADD_CART', {id: item.id, item: item})
       this.$emit('notify', `"${item.title}" 카트에 추가 됨`)
     },
@@ -63,6 +80,54 @@ export default {
       const title = this.$store.state.cart[id].title
       this.$store.commit('REMOVE_CART', id)
       this.$emit('notify', `"${title}" 카트에서 삭제 됨`)
+    },
+    priceData (item) {
+      try {
+        const isFree = item.detail[item.id].data.is_free
+
+        if (isFree) {
+          return [
+            {
+              free: true,
+              init_price: 0,
+              final_price: 0,
+              discount: false,
+              percent: 0
+            }
+          ]
+        }
+        const priceInfo = item.detail[item.id].data.price_overview
+        const initPrice = parseInt(priceInfo.initial * 0.01)
+        const finalPrice = parseInt(priceInfo.final * 0.01)
+        const discountPercent = priceInfo.discount_percent
+
+        return [
+          {
+            isfree: false,
+            init_price: initPrice,
+            final_price: finalPrice,
+            discount: initPrice !== finalPrice,
+            percent: discountPercent
+          }
+        ]
+      } catch (e) {
+        return [
+          {
+            isfree: false,
+            init_price: undefined,
+            final_price: undefined,
+            discount: false,
+            percent: undefined
+          }
+        ]
+      }
+    },
+    priceString (price) {
+      try {
+        return `₩ ${price.toLocaleString('en')}`
+      } catch (e) {
+        return ''
+      }
     }
   }
 }
@@ -99,6 +164,8 @@ export default {
     display: inline-block;
     width: 80%;
     margin-bottom: 15px;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 10px;
 
     .itemImage {
       width: 100%;
@@ -109,7 +176,7 @@ export default {
     .itemAction {
       background-color: #000;
       padding: 4px;
-      margin-top: 2px;
+      margin-top: 10px;
       display: inline-block;
       box-sizing: border-box;
 
@@ -146,6 +213,14 @@ export default {
         color: #fff;
       }
     }
+
+    .itemPrice {
+      margin-top: 10px;
+      box-sizing: border-box;
+      color: #c6d4df;
+      float: right;
+      text-align: right;
+    }
   }
 }
 
@@ -153,6 +228,36 @@ export default {
   @include message;
   float: right;
   background-color: $primary-color;
+}
+
+.free {
+  color: #888;
+}
+
+.origin-price {
+  font-size: 0.9rem;
+  color: #888;
+  text-decoration: line-through;
+}
+
+.discount {
+  margin-right: 5px;
+  float: right;
+}
+
+.discount-span {
+  margin-right: 5px;
+  float: right;
+
+  .discount-percent {
+    font-size: 0.9rem;
+    background-color: #4c6b22;
+    color: #8bc53f;
+    padding: 3px;
+    box-sizing: border-box;
+    margin-top: 8px;
+    margin-right: 4px;
+  }
 }
 
 </style>
