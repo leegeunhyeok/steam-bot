@@ -62,7 +62,7 @@ router.post('/query', async ctx => {
     const keyword = bot.getParameterValue(res)['keyword']['stringValue']
     const result = await SteamStore.search(keyword)
     resType = 'store'
-    const pendingPromises = result.slice(0, 3).map(async info => {
+    const pendingPromises = result.slice(0, 5).map(async info => {
       info['detail'] = await SteamStore.detail(info.id, 'koreana')
       return info
     })
