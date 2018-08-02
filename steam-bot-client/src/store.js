@@ -5,16 +5,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    cart: []
+    cart: {}
   },
   mutations: {
-    ADD_CART (state, item) {
-      state.cart.push(item)
+    ADD_CART (state, data) {
+      state.cart[data.id] = data.item
     },
     REMOVE_CART (state, id) {
-      const idx = state.cart.indexOf(id)
-      if (idx !== -1) {
-        state.cart.splice(idx, 1)
+      if (state.cart[id] !== undefined) {
+        state.cart[id] = undefined
       }
     },
     RESET_CART (state) {

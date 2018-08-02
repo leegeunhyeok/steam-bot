@@ -6,8 +6,8 @@
     <div class="itemArea" v-if="isStoreMessage" v-for="item in data.data" :key="item">
       <img class="itemImage" :src="item.detail[item.id].data.header_image">
       <div class="itemAction">
-        <button class="cart-button" @click="removeCart(item.id, item.title)" v-if="inCart(item.id)">카트에서 삭제</button>
-        <button class="cart-button" @click="addCart(item.id, item.title)" v-else>카트에 담기</button>
+        <button class="cart-button" @click="removeCart(item.id)" v-if="inCart(item.id)">카트에서 삭제</button>
+        <button class="cart-button" @click="addCart(item)" v-else>카트에 담기</button>
         <a class="store-visit" :href="item.src" target="_blank">상점 페이지 방문</a>
       </div>
     </div>
@@ -53,13 +53,14 @@ export default {
   },
   methods: {
     inCart (id) {
-      return this.$store.state.cart.indexOf(id) !== -1
+      return this.$store.state.cart[id] !== undefined
     },
-    addCart (id, title) {
-      this.$store.commit('ADD_CART', id)
-      this.$emit('notify', `"${title}" 카트에 추가 됨`)
+    addCart (item) {
+      this.$store.commit('ADD_CART', {id: item.id, item: item})
+      this.$emit('notify', `"${item.title}" 카트에 추가 됨`)
     },
-    removeCart (id, title) {
+    removeCart (id) {
+      const title = this.$store.state.cart[id].title
       this.$store.commit('REMOVE_CART', id)
       this.$emit('notify', `"${title}" 카트에서 삭제 됨`)
     }
@@ -152,13 +153,6 @@ export default {
   @include message;
   float: right;
   background-color: $primary-color;
-}
-  
-
-.message::after {
-  content: "";
-  clear: both;
-  display: table;
 }
 
 </style>

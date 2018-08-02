@@ -1,14 +1,11 @@
 <template>
   <div id="app">
-    <ChatHeader/>
-    <ChatArea :data="message" @message="createMessage" @notify="openAlert"/>
+    <ChatHeader @drawerOpen="drawer = true"/>
+    <ChatArea :data="message" :wait="wait" @message="createMessage" @notify="openAlert"/>
     <ChatInputArea @user-message="userMessage"/>
-    <transition name="slide" mode="out-in">
-      <ChatAlert :alertMessage="alertMessage" v-if="alert"/>
-    </transition>
-    <transition name="fade" mode="out-in">
-      <ChatModal @close="modal = false" v-if="modal"/>
-    </transition>
+    <ChatAlert :alertMessage="alertMessage" v-if="alert"/>
+    <ChatModal @close="modal = false" v-if="modal"/>
+    <ChatDrawer @drawerClose="drawer = false" v-if="drawer"/>
   </div>
 </template>
 
@@ -18,6 +15,7 @@ import ChatArea from './components/ChatArea.vue'
 import ChatInputArea from './components/ChatInputArea.vue'
 import ChatAlert from './components/ChatAlert.vue'
 import ChatModal from './components/ChatModal.vue'
+import ChatDrawer from './components/ChatDrawer.vue'
 
 export default {
   name: 'app',
@@ -27,7 +25,9 @@ export default {
       alertMessage: '',
       alert: false,
       alertTimeout: null,
-      modal: false
+      modal: false,
+      wait: false,
+      drawer: false
     }
   },
   components: {
@@ -35,10 +35,12 @@ export default {
     ChatArea,
     ChatInputArea,
     ChatAlert,
-    ChatModal
+    ChatModal,
+    ChatDrawer
   },
   methods: {
     userMessage (message) {
+      this.wait = true
       this.message = {type: 'user', message: message, data: {}}
       this.$http.post('/query', {message: message}).then(r => {
         /**
@@ -52,14 +54,19 @@ export default {
         this.botMessage(r.data)
       }).catch(e => {
         this.openAlert('메시지 전송 중 문제가 발생했습니다.')
+      }).finally(() => {
+        this.wait = false
       })
     },
     botMessage (response) {
+      const $action = response.action
       this.message = response
-      if (response.action === 'cart-clear') {
+      if ($action === 'cart-clear') {
         this.$store.commit('RESET_CART')
         this.openAlert('카트가 초기화되었습니다.')
-      } else if (response.action === 'help') {
+      } else if ($action === 'cart-list') {
+        console.log(this.$store.state.cart)
+      } else if ($action === 'help') {
         this.openModal()
       }
     },
@@ -112,23 +119,11 @@ export default {
 </script>
 
 <style lang="scss">
+
 html, body, #app {
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
-.slide-enter-active, .slide-leave-active {
-  transition: .5s;
-}
-.slide-enter, .slide-leave-to {
-  transform: translateY(-100px);
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: .3s;
-}
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-}
 </style>

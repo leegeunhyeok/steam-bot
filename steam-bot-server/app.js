@@ -69,6 +69,8 @@ router.post('/query', async ctx => {
     resData = await Promise.all(pendingPromises)
   } else if ($intent === 'cart-clear') {
     resAction = 'cart-clear'
+  } else if ($intent === 'cart-list') {
+    resAction = 'cart-list'
   } else if ($intent === 'help') {
     resAction = 'help'
   }

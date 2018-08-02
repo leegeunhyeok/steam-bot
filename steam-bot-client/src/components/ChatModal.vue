@@ -1,23 +1,25 @@
 <template>
-  <div id="modal-area" @click="$emit('close')">
-    <div id="modal">
-      <div class="modal-content">
-        <h3>도움말</h3>
-        <p>아래 리스트는 제가 할 수 있는 일이에요!</p><br>
-        <b>- 스팀 상점 검색</b><br>
-        <b>- 검색한 항목의 상세정보 조회</b><br>
-        <b>- 검색한 항목의 DLC 조회</b><br>
-        <b>- 카트에 추가 / 삭제</b><br>
-        <b>- 카트 목록 보기</b><br>
-        <b>- 카트 목록 초기화</b><br>
-        <b>- 도움말</b><br>
-        <p>아직 배우고있는 단계라 대화를 잘 이해하지 못할 수 있습니다 ㅜㅜ</p>
-      </div>
-      <div class="modal-footer">
-        <button class="modal-button" @click="$emit('close')">확인</button>
+  <transition name="fade" mode="out-in">
+    <div id="modal-area" @click="$emit('close')">
+      <div id="modal">
+        <div class="modal-content">
+          <h3>도움말</h3>
+          <p>아래 리스트는 제가 할 수 있는 일이에요!</p><br>
+          <b>- 스팀 상점 검색</b><br>
+          <b>- 검색한 항목의 상세정보 조회</b><br>
+          <b>- 검색한 항목의 DLC 조회</b><br>
+          <b>- 카트에 추가 / 삭제</b><br>
+          <b>- 카트 목록 보기</b><br>
+          <b>- 카트 목록 초기화</b><br>
+          <b>- 도움말</b><br>
+          <p>아직 배우고있는 단계라 대화를 잘 이해하지 못할 수 있습니다 ㅜㅜ</p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-button" @click="$emit('close')">확인</button>
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
@@ -81,4 +83,12 @@ export default {
     }
   }
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: .3s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
 </style>

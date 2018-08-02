@@ -1,24 +1,31 @@
 <template>
   <div id="chat-wrap">
-    <div class="message" v-for="m in messages" :key="m">
+    <div class="message" v-for="(m, idx) in messages" :key="idx">
       <ChatMessage :data="m" @notify="notify" @message="createMessage" @scrollDown="scrollDown"></ChatMessage>
     </div>
+    <transition name="fade" mode="out-in">
+      <div class="message">
+        <ChatWaiting v-if="wait"/>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
 import ChatMessage from './ChatMessage.vue'
+import ChatWaiting from './ChatWaiting.vue'
 
 export default {
   name: 'ChatInputArea',
-  props: ['data'],
+  props: ['data', 'wait'],
   data () {
     return {
       messages: []
     }
   },
   components: {
-    ChatMessage
+    ChatMessage,
+    ChatWaiting
   },
   watch: {
     data (v) {
@@ -99,5 +106,4 @@ export default {
     display: table;
   }
 }
-
 </style>

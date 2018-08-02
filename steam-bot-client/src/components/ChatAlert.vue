@@ -1,5 +1,7 @@
 <template>
-  <div id="alert">{{ alertMessage }}</div>
+  <transition name="slide" mode="out-in">
+    <div id="alert">{{ alertMessage }}</div>
+  </transition>
 </template>
 
 <script>
@@ -24,5 +26,12 @@ export default {
   color: $background-text-color;
   text-align: center;
   z-index: 9999;
+}
+
+.slide-enter-active, .slide-leave-active {
+  transition: .5s;
+}
+.slide-enter, .slide-leave-to {
+  transform: translateY(-100px);
 }
 </style>
