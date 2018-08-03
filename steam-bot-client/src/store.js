@@ -9,13 +9,13 @@ export default new Vuex.Store({
     itemList: []
   },
   mutations: {
-    ADD_CART (state, data) {
-      if (state.cart[data.id] === undefined) {
-        state.cart[data.id] = data.item
+    ADD_CART (state, item) {
+      if (state.cart[item.id] === undefined) {
+        state.cart[item.id] = item
       }
       
-      if (state.itemList.indexOf(data.id) === -1) {
-        state.itemList.push(data.id)
+      if (state.itemList.indexOf(item.id) === -1) {
+        state.itemList.push(item.id)
       }
     },
     REMOVE_CART (state, id) {
@@ -29,7 +29,8 @@ export default new Vuex.Store({
       }
     },
     RESET_CART (state) {
-      state.cart = []
+      state.cart = {}
+      state.itemList = []
     }
   },
   actions: {

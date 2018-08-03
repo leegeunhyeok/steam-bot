@@ -51,9 +51,11 @@ router.post('/query', async ctx => {
   let resType = 'default'
   let resData = {}
   let resAction = ''
+  let resMessage = ''
   console.log('Client:', ctx.request.body.message)
+
   const res = await bot.sendTextMessageToDialogFlow(ctx.request.body.message, ctx.session.id)
-  let resMessage = bot.getResponseText(res)
+  resMessage = bot.getResponseText(res)
 
   const $intent = bot.getIntent(res)
 

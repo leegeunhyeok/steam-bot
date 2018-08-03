@@ -16,7 +16,7 @@ import ChatMessage from './ChatMessage.vue'
 import ChatWaiting from './ChatWaiting.vue'
 
 export default {
-  name: 'ChatInputArea',
+  name: 'ChatArea',
   props: ['data', 'wait'],
   data () {
     return {

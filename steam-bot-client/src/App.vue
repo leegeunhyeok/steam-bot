@@ -64,7 +64,6 @@ export default {
         this.$store.commit('RESET_CART')
         this.openAlert('카트가 초기화되었습니다.')
       } else if ($action === 'cart-list') {
-        response.data = this.$store.state.cart
         response.type = 'store'
       } else if ($action === 'help') {
         this.openModal()
