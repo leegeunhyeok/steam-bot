@@ -1,8 +1,15 @@
 <template>
   <div :class="messageTypeClass">
     <div class="text">{{ data.message }}</div>
-    <ChatCartListItem v-if="data.action === 'cart-list'" v-for="cart in $store.state.itemList" :key="cart" :item="cart"/>
-    <ChatStoreItem v-if="isStoreSearch" v-for="item in data.data" :key="item" :item="item"/>
+    <div v-if="data.action === 'cart-list'">
+      <ChatCartListItem @notify="notify" v-for="cart in $store.state.itemList" :key="cart" :item="cart"/>
+      <div class="listArea">
+        <div class="price">
+          <div>합계: {{ totalPrice }}</div>
+        </div>
+      </div>
+    </div>
+    <ChatStoreItem v-if="isStoreSearch" @notify="notify" v-for="item in data.data" :key="item" :item="item"/>
   </div>
 </template>
 
@@ -50,10 +57,36 @@ export default {
         return
       }
       return this.data.type === 'store'
+    },
+    /**
+     * @description 카트에 담긴 상품 가격 총합
+     */
+    totalPrice () {
+      let total = 0
+      this.$store.state.itemList.forEach(i => {
+        try {
+          const info = this.$store.state.cart[i].detail[i].data
+          if (!info.is_free) {
+            total += parseInt(info.price_overview.final * 0.01)
+          }
+        } catch (e) {
+          // ;
+        }
+      })
+      return `₩ ${total.toLocaleString('en')}`
     }
   },
   mounted () {
     this.$emit('scrollDown')
+  },
+  methods: {
+    /**
+     * @description 부모 컴포넌트에게 notify 이벤트 발생
+     * @param {string} message 알림 메시지
+     */
+    notify (message) {
+      this.$emit('notify', message)
+    }
   }
 }
 </script>
