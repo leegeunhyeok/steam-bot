@@ -20,7 +20,7 @@ export default {
   props: ['data', 'wait'],
   data () {
     return {
-      messages: []
+      messages: [] // 대회 메시지 목록
     }
   },
   components: {
@@ -62,6 +62,9 @@ export default {
     notify (message) {
       this.$emit('notify', message)
     },
+    /**
+     * @description BOT 새 메시지 생성
+     */
     createMessage (message) {
       this.$emit('message', message)
     }

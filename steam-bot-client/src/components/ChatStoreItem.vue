@@ -41,9 +41,17 @@ export default {
     }
   },
   methods: {
+    /**
+     * @description 해당 ID의 상품이 카트에 존재하는지 확인
+     * @param {string} id 확인할 ID
+     */
     inCart (id) {
       return this.$store.state.itemList.indexOf(id) !== -1
     },
+    /**
+     * @description 카트에 새 항목 추가
+     * @param {any} item 추가할 항목 데이터
+     */
     addCart (item) {
       if (this.$store.state.cart[item.id] && this.inCart(item.id)) {
         this.$emit('notify', '이미 카트에 존재합니다')
@@ -52,13 +60,22 @@ export default {
       this.$store.commit('ADD_CART', item)
       this.$emit('notify', `"${item.title}" 카트에 추가 됨`)
     },
+    /**
+     * @description 해당 ID의 항목을 카트에서 삭제
+     * @param {string} id 삭제할 ID
+     */
     removeCart (id) {
       const title = this.$store.state.cart[id]['title']
       this.$store.commit('REMOVE_CART', id)
       this.$emit('notify', `"${title}" 카트에서 삭제 됨`)
     },
+    /**
+     * @description 해당 항목의 가격 정보
+     * @param {any} item 항목 데이터
+     */
     priceData (item) {
       try {
+        // 무료 상품 여부
         const isFree = item.detail[item.id].data.is_free
 
         if (isFree) {
@@ -72,9 +89,17 @@ export default {
             }
           ]
         }
+
+        // 가격정보
         const priceInfo = item.detail[item.id].data.price_overview
+
+        // 정가
         const initPrice = parseInt(priceInfo.initial * 0.01)
+
+        // 최종가 (할인 등)
         const finalPrice = parseInt(priceInfo.final * 0.01)
+
+        // 할인율
         const discountPercent = priceInfo.discount_percent
 
         return [
@@ -98,6 +123,10 @@ export default {
         ]
       }
     },
+    /**
+     * @description 가격을 문자열 데이터로 변환
+     * @param {number} price 가격
+     */
     priceString (price) {
       try {
         return `₩ ${price.toLocaleString('en')}`

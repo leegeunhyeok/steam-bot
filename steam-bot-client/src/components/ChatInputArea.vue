@@ -10,16 +10,21 @@ export default {
   name: 'ChatInputArea',
   data () {
     return {
-      message: ''
+      message: '' // 입력 메시지
     }
   },
   methods: {
+    /**
+     * @description 현재 입력된 데이터를 부모 컴포넌트에게 전달
+     */
     send () {
       const message = this.message.trim()
       this.message = ''
       if (message) {
+        // 메시지가 비어있지 않으면 전달
         this.$emit('user-message', message)
       }
+      // 포커스
       document.getElementById('input').focus()
     }
   }
