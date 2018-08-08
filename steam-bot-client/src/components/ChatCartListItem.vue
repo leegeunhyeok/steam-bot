@@ -1,7 +1,10 @@
 <template>
   <div class="listArea">
+    <span class="number">{{ index + 1 }}</span>
     <img :src="$store.state.cart[item].detail[item].data.header_image">
-    <div class="title">{{ $store.state.cart[item].title }}</div>
+    <div class="title">
+      <a :href="$store.state.cart[item].src">{{ $store.state.cart[item].title }}</a>
+    </div>
     <div class="price">
       <div class="discount" v-if="discount">{{ priceString(price) }}</div>
       <div>{{ priceString(final) }}</div>
@@ -13,7 +16,7 @@
 <script>
 export default {
   name: 'ChatCartListItem',
-  props: ['item'],
+  props: ['item', 'index'],
   computed: {
     /**
      * @description 할인된 가격인지 확인
@@ -84,6 +87,7 @@ export default {
 @import '../common.scss';
 
 .listArea {
+  position: relative;
   display: inline-block;
   width: 100%;
   box-sizing: border-box;
@@ -92,6 +96,21 @@ export default {
   padding: 10px;
   color: $background-text-color;
 
+  .number {
+    position: absolute;
+    box-sizing: border-box;
+    display: block;
+    top: 5px;
+    left: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: $secondary-color;
+    text-align: center;
+    color: $primary-color;
+    font-weight: bold;
+  }
+  
   img {
     width: 40%;
     float: left;
@@ -101,6 +120,16 @@ export default {
   .title {
     float: left;
     margin-top: 10px;
+
+    a {
+      cursor: pointer;
+      color: #acb2b8;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
   }
 
   .price {

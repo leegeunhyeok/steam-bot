@@ -2,7 +2,7 @@
   <div :class="messageTypeClass">
     <div class="text">{{ data.message }}</div>
     <div v-if="data.action === 'cart-list'">
-      <ChatCartListItem @notify="notify" v-for="cart in $store.state.itemList" :key="cart" :item="cart"/>
+      <ChatCartListItem @notify="notify" v-for="(cart, i) in $store.state.itemList" :key="i" :item="cart" :index="i"/>
       <div class="listArea">
         <div class="price">
           <div>합계: {{ totalPrice }}</div>
